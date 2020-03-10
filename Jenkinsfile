@@ -1,9 +1,9 @@
 pipeline {
     agent any
     stages {
-        stage ("print") {
+        stage ("scm") {
             steps {
-                sh "echo hellow world"
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/suresh1298/Sample_Project']]])
             }
         }
         stage ("touch") {
