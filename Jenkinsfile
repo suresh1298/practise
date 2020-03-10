@@ -6,9 +6,14 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/suresh1298/Sample_Project']]])
             }
         }
-        stage ("touch") {
+        stage ("sonar analasis") {
+            environment {
+                scannerHome = tool 'sonarscanner'
+            }
             steps {
-                sh "touch suresh"
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
             }
         }
         stage ("export"){
