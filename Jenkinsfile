@@ -1,17 +1,19 @@
 pipeline {
     agent any
-    stages {	
-        stage ('Build Stage') {
+    stages {
+        stage ("print") {
             steps {
-			dir("/var/lib/jenkins/workspace/deploy/"){
-			sh 'mvn clean install'
-            }
+                sh "echo hellow world"
             }
         }
-		stage ('Deployment Stage') {
+        stage ("touch") {
             steps {
-                
-                    sh 'cp /var/lib/jenkins/workspace/deploy/target/*.war /opt/tomcat/apache-tomcat-8.5.37/webapps/'
+                sh "touch suresh"
+            }
+        }
+        stage ("export"){
+            steps {
+                sh "export"
             }
         }
     }
