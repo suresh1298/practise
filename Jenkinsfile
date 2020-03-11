@@ -25,7 +25,7 @@ pipeline {
         }
         stage ("maven buld") {
             steps {
-                withMaven( maven : ' maven ') {
+                withMaveEnv('maven') {
                     sh 'mvn install'
                 }
             }
