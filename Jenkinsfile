@@ -23,14 +23,9 @@ pipeline {
                 }
             }
         }
-        stage ("maven buld") {
-            enviroment {
-                mavenHome = tool 'maven'
-            }
-            steps {
-                withMaven('maven') {
-                    sh "mvn install"
-                }
+        steps {
+            withMaven(maven : 'maven') {
+                sh "mvn install"
             }
         }
     }
