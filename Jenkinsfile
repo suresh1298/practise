@@ -32,4 +32,19 @@ pipeline {
             }
         }
     }
+    post {
+    success {
+        emailext (
+            to: 'reddysuresh1298@gmail.com',
+            subject: "JOB: ${env.JOB_NAME} - SUCCESS",
+            body: "JOB SUCCESS - \"${env.JOB_NAME}\" Build No: ${env.BUILD_NUMBER}\n\nClick on the below link to view the logs:\n ${env.BUILD_URL}\n"
+        )
+    }
+    failure {
+		emailext (
+            to: 'reddysuresh1298@gmail.com',
+            subject: "JOB: ${env.JOB_NAME} - FAILURE",
+            body: "JOB FAILURE - \"${env.JOB_NAME}\" Build No: ${env.BUILD_NUMBER}\n\nClick on the below link to view the logs:\n ${env.BUILD_URL}\n"
+        )
+    }
 }
