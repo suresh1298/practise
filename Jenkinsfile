@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven'
+    }
     stages {
         stage ("git scm") {
             steps {
@@ -21,6 +24,11 @@ pipeline {
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
+            }
+        }
+        stage ('maven build') {
+            steps {
+                sh 'mvn clean install'
             }
         }
     }
