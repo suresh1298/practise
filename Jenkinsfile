@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'maven'
-        sonarqube 'sonarqube'
+        scannerHome 'sonarqube'
     }
     stages {
         stage ("git scm") {
