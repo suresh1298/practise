@@ -2,7 +2,6 @@ pipeline {
     agent any
     tools {
         maven 'maven'
-        scannerHome 'sonarqube'
     }
     stages {
         stage ("git scm") {
@@ -12,10 +11,10 @@ pipeline {
         }
         stage ("sonar") {
             environment {
-                scannerHome = tool 'sonarqube'
+                scannerHome = tool 'sonarscanner'
             }
             steps {
-                withSonarQubeEnv('sonarqube') {
+                withSonarQubeEnv('sonarscanner') {
                     sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
