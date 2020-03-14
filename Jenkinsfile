@@ -33,7 +33,7 @@ pipeline {
         }
         stage ('nexus') {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'whatsapp', classifier: '', file: '/target/practise.war', type: 'war']], credentialsId: '5a0af56a-1fa8-49a1-8d5f-bc059281da43', groupId: 'practise', nexusUrl: '52.66.198.195', nexusVersion: 'nexus3', protocol: 'http', repository: 'suresh_release', version: '1.0.0'
+                nexusArtifactUploader artifacts: [[artifactId: 'whatsapp', classifier: '', file: '/target/practise.war', type: 'war']], credentialsId: '5a0af56a-1fa8-49a1-8d5f-bc059281da43', groupId: 'practise', nexusUrl: '52.66.198.195:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'suresh_release', version: '1.1.0'
             }
         }
     }
