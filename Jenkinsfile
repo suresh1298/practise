@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ("git scm") {
             steps {
-                git 'https://github.com/suresh1298/Sample_Project'
+                git 'https://github.com/suresh1298/practise'
             }
         }
         stage ("sonar") {
@@ -14,7 +14,7 @@ pipeline {
                 scannerHome = tool 'sonarscanner'
             }
             steps {
-                withSonarQubeEnv('sonarqube') {
+                withSonarQubeEnv('sonar') {
                     sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
         }
         stage ('nexus') {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'simple-web-app', classifier: '', file: 'target/simple-web-app.war', type: 'war']], credentialsId: '59cfd18f-873c-4852-be70-8b4e8b5850d1', groupId: 'happy', nexusUrl: '13.233.90.88:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'suresh-release', version: '1.9.0'
+                nexusArtifactUploader artifacts: [[artifactId: 'whatsapp', classifier: '', file: '/target/practise-war', type: 'war']], credentialsId: '5a0af56a-1fa8-49a1-8d5f-bc059281da43', groupId: 'practise', nexusUrl: '52.66.198.195', nexusVersion: 'nexus3', protocol: 'http', repository: 'suresh_release', version: '1.0.0'
             }
         }
     }
