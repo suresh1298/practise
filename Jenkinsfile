@@ -31,7 +31,7 @@ pipeline {
         }
         stage ("scan") {
             environment {
-                scannerHome = tool 'sonar_slave'
+                scannerHome = tool 'sonar'
             }
             steps {
                 node ("jenkins_slave") {
