@@ -8,21 +8,21 @@ pipeline {
             parallel {
                stage ("git") {
                    steps {
-                       node ("master") {
+                       node ("${c}") {
                            git credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise'
                        }
                    }
                }
                stage ("null") {
                    steps {
-                       node ("master") {
+                       node ("${c}") {
                            sh "echo ${a}"
                        }
                    }
                }
                stage ("print") {
                    steps {
-                       node ("master") {
+                       node ("${c}") {
                            sh "echo 'print'"
                        }
                    }
@@ -34,7 +34,7 @@ pipeline {
                 scannerHome = tool 'sonar'
             }
             steps {
-                node ("master") {
+                node ("${c}") {
                     withSonarQubeEnv('sonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
@@ -43,7 +43,7 @@ pipeline {
         }
         stage ("quality") {
             steps {
-                node ("master") {
+                node ("${c}") {
                     timeout(time: 1, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true   
                     }
@@ -52,21 +52,21 @@ pipeline {
         }
         stage ("buld") {
             steps {
-                node ("master") {
+                node ("${c}") {
                     sh 'mvn clean install'
                 }
             }
         }
         stage ('nexus') {
             steps {
-                node ("master") {
+                node ("${c}") {
                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.5']]], tagName: '1.6'
                 }
             }
         }
         stage ("deploy") {
             steps {
-                node ("master") {
+                node ("${c}") {
                     sh "sudo cp target/*.war /opt/tomcat/webapps"
                 }
             }
