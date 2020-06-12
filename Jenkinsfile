@@ -1,75 +1,36 @@
 pipeline {
     agent any
-    tools {
-        maven 'maven'
-    }
     stages {
-        stage ("scm checkout") {
+        stage ("scm") {
             parallel {
-               stage ("git") {
-                   steps {
-                       node ("${c}") {
-                           git credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise'
-                       }
-                   }
-               }
-               stage ("null") {
-                   steps {
-                       node ("${c}") {
-                           sh "echo ${a}"
-                       }
-                   }
-               }
-               stage ("print") {
-                   steps {
-                       node ("${c}") {
-                           sh "echo 'print'"
-                       }
-                   }
-               }
-            }
-        }
-        stage ("scan") {
-            environment {
-                scannerHome = tool 'sonar'
-            }
-            steps {
-                node ("${c}") {
-                    withSonarQubeEnv('sonarQube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                stage ("a") {
+                    steps {
+                        script {
+                            if (env.BRANCH_NAME == 'master') {
+                                sh "echo 'this is master baranch'"
+                            } elif (env.BRANCH_NAME == 'develope') {
+                                sh "echo 'this is develope branch'"
+                            } else {
+                                sh "echo 'nothing to do'"
+                            }
+                        }
                     }
                 }
-            }
-        }
-        stage ("quality") {
-            steps {
-                node ("${c}") {
-                    timeout(time: 1, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true   
+                stage ("b") {
+                    steps {
+                        script {
+                            if (env.SERVER_NAME == 'abc') {
+                                sh "echo 'this is server abe'"
+                            } elif (env.SERVER_NAME == 'xyz') {
+                                sh "echo 'this is server xyz'"
+                            } else {
+                                sh "echo 'nothing to do'"
+                            }
+                        }
                     }
-                }
-           }
-        }
-        stage ("buld") {
-            steps {
-                node ("${c}") {
-                    sh 'mvn clean install'
-                }
-            }
-        }
-        stage ('nexus') {
-            steps {
-                node ("${c}") {
-                    nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.5']]], tagName: '1.6'
-                }
-            }
-        }
-        stage ("deploy") {
-            steps {
-                node ("${c}") {
-                    sh "sudo cp target/*.war /opt/tomcat/webapps"
                 }
             }
         }
     }
 }
+                                
