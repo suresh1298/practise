@@ -8,7 +8,7 @@ pipeline {
             parallel {
                stage ("git") {
                    steps {
-                       node ("jenkins_slave") {
+                       node ("master") {
                            git credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise'
                        }
                    }
@@ -22,7 +22,7 @@ pipeline {
                }
                stage ("print") {
                    steps {
-                       node ("jenkins_slave") {
+                       node ("master") {
                            sh "echo 'print'"
                        }
                    }
@@ -34,7 +34,7 @@ pipeline {
                 scannerHome = tool 'sonar'
             }
             steps {
-                node ("jenkins_slave") {
+                node ("master") {
                     withSonarQubeEnv('sonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
@@ -43,7 +43,7 @@ pipeline {
         }
         stage ("quality") {
             steps {
-                node ("jenkins_slave") {
+                node ("master") {
                     timeout(time: 1, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true   
                     }
@@ -52,21 +52,21 @@ pipeline {
         }
         stage ("buld") {
             steps {
-                node ("jenkins_slave") {
+                node ("master") {
                     sh 'mvn clean install'
                 }
             }
         }
         stage ('nexus') {
             steps {
-                node ("jenkins_slave") {
+                node ("master") {
                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.5']]], tagName: '1.6'
                 }
             }
         }
         stage ("deploy") {
             steps {
-                node ("jenkins_slave") {
+                node ("master") {
                     sh "sudo cp target/*.war /opt/tomcat/webapps"
                 }
             }
