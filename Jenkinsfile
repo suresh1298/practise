@@ -8,21 +8,21 @@ pipeline {
             parallel {
                stage ("git") {
                    steps {
-                       node ("setup") {
+                       node ("jenkins_slave") {
                            git credentialsId: '94890d65-8c98-4dfa-8dcd-1529d5e94fed', url: 'https://github.com/suresh1298/practise'
                        }
                    }
                }
                stage ("null") {
                    steps {
-                       node ("setup") {
+                       node ("jenkins_slave") {
                            sh "echo 'suresh'"
                        }
                    }
                }
                stage ("print") {
                    steps {
-                       node ("setup") {
+                       node ("jenkins_slave") {
                            sh "echo 'print'"
                        }
                    }
@@ -34,7 +34,7 @@ pipeline {
                 scannerHome = tool 'sonar_slave'
             }
             steps {
-                node ("sonar_slave") {
+                node ("jenkins_slave") {
                     withSonarQubeEnv('sonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
@@ -43,7 +43,7 @@ pipeline {
         }
         stage ("quality") {
             steps {
-                node ("sonar_slave") {
+                node ("jenkins_slave") {
                     timeout(time: 1, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true   
                     }
@@ -52,21 +52,21 @@ pipeline {
         }
         stage ("buld") {
             steps {
-                node ("setup") {
+                node ("jenkins_slave") {
                     sh 'mvn clean install'
                 }
             }
         }
         stage ('nexus') {
             steps {
-                node ("setup") {
+                node ("jenkins_slave") {
                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '.war', filePath: 'target/simple-web-app.war']], mavenCoordinate: [artifactId: 'simple-web-app', groupId: 'happy', packaging: 'war', version: '1.4']]]
                 }
             }
         }
         stage ("deploy") {
             steps {
-                node ("setup") {
+                node ("jenkins_slave") {
                     sh "sudo cp target/*.war /opt/tomcat/webapps"
                 }
             }
