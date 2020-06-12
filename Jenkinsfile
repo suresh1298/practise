@@ -16,7 +16,7 @@ pipeline {
                stage ("null") {
                    steps {
                        node ("jenkins_slave") {
-                           sh "echo 'suresh'"
+                           sh "echo ${a}"
                        }
                    }
                }
