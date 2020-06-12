@@ -9,7 +9,7 @@ pipeline {
                stage ("git") {
                    steps {
                        node ("jenkins_slave") {
-                           git credentialsId: '94890d65-8c98-4dfa-8dcd-1529d5e94fed', url: 'https://github.com/suresh1298/practise'
+                           git credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise'
                        }
                    }
                }
