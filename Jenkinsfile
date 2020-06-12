@@ -4,58 +4,72 @@ pipeline {
         maven 'maven'
     }
     stages {
-        stage ("git scm") {
-            steps {
-                git 'https://github.com/suresh1298/practise'
+        stage ("scm checkout") {
+            parallel {
+               stage ("git") {
+                   steps {
+                       node ("setup") {
+                           git credentialsId: '94890d65-8c98-4dfa-8dcd-1529d5e94fed', url: 'https://github.com/suresh1298/practise'
+                       }
+                   }
+               }
+               stage ("null") {
+                   steps {
+                       node ("setup") {
+                           sh "echo 'suresh'"
+                       }
+                   }
+               }
+               stage ("print") {
+                   steps {
+                       node ("setup") {
+                           sh "echo 'print'"
+                       }
+                   }
+               }
             }
         }
-        stage ("sonar") {
+        stage ("scan") {
             environment {
-                scannerHome = tool 'sonarscanner'
+                scannerHome = tool 'sonar_slave'
             }
             steps {
-                withSonarQubeEnv('sonar') {
-                    sh "${scannerHome}/bin/sonar-scanner"
+                node ("sonar_slave") {
+                    withSonarQubeEnv('sonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
-        stage ("quality check") {
+        stage ("quality") {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                node ("sonar_slave") {
+                    timeout(time: 1, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true   
+                    }
                 }
-            }
+           }
         }
-        stage ('maven build') {
+        stage ("buld") {
             steps {
-                sh 'mvn clean install'
+                node ("setup") {
+                    sh 'mvn clean install'
+                }
             }
         }
         stage ('nexus') {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'whatsapp', classifier: '', file: 'target/practise.war', type: 'war']], credentialsId: '5a0af56a-1fa8-49a1-8d5f-bc059281da43', groupId: 'practise', nexusUrl: '52.66.198.195:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'suresh_release', version: '1.3.0'
+                node ("setup") {
+                    nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '.war', filePath: 'target/simple-web-app.war']], mavenCoordinate: [artifactId: 'simple-web-app', groupId: 'happy', packaging: 'war', version: '1.4']]]
+                }
             }
         }
-        stage ('tomcat') {
+        stage ("deploy") {
             steps {
-                sh 'sudo cp target/*.war /opt/tomcat/webapps/'
+                node ("setup") {
+                    sh "sudo cp target/*.war /opt/tomcat/webapps"
+                }
             }
-        }
-    }
-    post {
-        success {
-            emailext (
-                to: 'reddysuresh1298@gmail.com',
-                subject: "JOB: ${env.JOB_NAME} - SUCCESS",
-                body: "JOB SUCCESS - \"${env.JOB_NAME}\" Build No: ${env.BUILD_NUMBER}\n\nClick on the below link to view the logs:\n ${env.BUILD_URL}\n"
-            )
-        }
-        failure {
-            emailext (
-                to: 'reddysuresh1298@gmail.com',
-                subject: "JOB: ${env.JOB_NAME} - FAILURE",
-                body: "JOB FAILURE - \"${env.JOB_NAME}\" Build No: ${env.BUILD_NUMBER}\n\nClick on the below link to view the logs:\n ${env.BUILD_URL}\n"
-            )
         }
     }
 }
