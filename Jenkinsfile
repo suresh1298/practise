@@ -3,24 +3,28 @@ pipeline {
     stages {
         stage ("scm") {
             parallel {
-                stage ("a") {
+                stage ("master") {
                     steps {
-                        script {
-                            if (env.BRANCH_NAME == 'master') {
-                                sh "echo 'this is master baranch'"
-                            } else {
-                                sh "echo 'nothing to do'"
+                        node ("jenkins_slave") {
+                            script {
+                                if (env.BRANCH_NAME == 'master') {
+                                    git credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise'
+                                } else {
+                                    sh "echo 'nothing to do'"
+                                }
                             }
                         }
                     }
                 }
-                stage ("b") {
+                stage ("develop") {
                     steps {
-                        script {
-                            if (env.SERVER_NAME == 'abc') {
-                                sh "echo 'this is server abe'"
-                            } else {
-                                sh "echo 'nothing to do'"
+                        node ("jenkins_slave") {
+                            script {
+                                if (env.SERVER_NAME == 'develop') {
+                                    git branch: 'develope', credentialsId: '7778fd25-578d-48df-b454-17fe5ca8baa0', url: 'https://github.com/suresh1298/practise.git'
+                                } else {
+                                    sh "echo 'nothing to do'"
+                                }
                             }
                         }
                     }
