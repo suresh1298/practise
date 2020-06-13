@@ -66,7 +66,7 @@ pipeline {
                 }
                 stage ("sucess") {
                     steps {
-                     moveComponents destination: 'sample_snapshot', nexusInstanceId: 'nexus', tagName: '1'   
+                     sh "echo 'sucess in uploading'"   
                     }
                 }
             }
