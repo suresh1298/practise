@@ -34,9 +34,18 @@ pipeline {
             }
         }
         stage ("maven") {
-            steps {
-                node ("${NODE}") {
-                    sh 'mvn clean install'
+            parallel {
+                stage ("buld in master") {
+                    steps {
+                        sh 'mvn clean install'
+                    }
+                }
+                stage ("buld in slave") {
+                    steps {
+                        node ("${NODE}") {
+                            sh 'mvn clean install'
+                        }
+                    }
                 }
             }
         }
