@@ -40,5 +40,27 @@ pipeline {
                 }
             }
         }
+        stage ("nexus") {
+            prallel {
+                stage ("deploy in master") {
+                    steps {
+                        node ("${NODE}") {
+                            script {
+                                 if (env.BRANCH_NAME == 'master') {
+                                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]], tagName: '1.0'
+                                 } else {
+                                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_snapshot', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]], tagName: '1.0'
+                                 }
+                            }
+                        }
+                    }
+                }
+                stage ("sucess") {
+                    steps {
+                        sh "echo 'sucess from nexus'"
+                    }
+                }
+            }
+        }
     }
 }
