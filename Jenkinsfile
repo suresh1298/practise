@@ -55,7 +55,7 @@ pipeline {
                     steps {
                         node ("${NODE}") {
                             script {
-                                 if (env.BRANCH_NAME == 'master') {
+                                 if (env.BRANCH_NAME == 'abd') {
                                      nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
                                  } else {
                                      nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_snapshot', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
