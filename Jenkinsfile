@@ -41,7 +41,7 @@ pipeline {
             }
         }
         stage ("nexus") {
-            prallel {
+            parallel {
                 stage ("deploy in master") {
                     steps {
                         node ("${NODE}") {
