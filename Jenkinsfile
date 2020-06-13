@@ -55,10 +55,10 @@ pipeline {
                     steps {
                         node ("${NODE}") {
                             script {
-                                 if (env.NEXUS == 'VERiSION') {
+                                 if (env.NEXUS == 'VERISION') {
                                      nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
                                  } else {
-                                     nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'sample_snapshot', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
+                                     nexusArtifactUploader artifacts: [[artifactId: 'practise', classifier: '', file: 'target/practise.war', type: 'war']], credentialsId: '5b2035fb-2986-44bb-8ff1-8c433fa1d996', groupId: 'whatsapp', nexusUrl: '3.235.173.182', nexusVersion: 'nexus3', protocol: 'http', repository: 'http://3.235.173.182:8081/repository/sample_snapshot/', version: '1.0'
                                  }
                             }
                         }
