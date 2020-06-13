@@ -62,5 +62,21 @@ pipeline {
                 }
             }
         }
+        stage ("depeloy") {
+            parallel {
+                stage ("deploy in jenkins") {
+                    steps {
+                        sh "sudo cp target/*.war /opt/tomcat/webapps"
+                    }
+                }
+                stage ("deploy in slave") {
+                    steps {
+                        node ("${NODE}") {
+                            sh "sudo cp target/*.war /opt/tomcat/webapps"
+                        }
+                    }
+                }
+            }
+        }
     }
 }
