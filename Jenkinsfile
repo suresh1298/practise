@@ -34,8 +34,8 @@ pipeline {
             }
         }
         stage ("maven") {
-            node ("${NODE}") {
-                steps {
+            steps {
+                node ("${NODE}") {
                     sh 'mvn clean install'
                 }
             }
