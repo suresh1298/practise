@@ -75,7 +75,7 @@ pipeline {
             parallel {
                 stage ("deploy in jenkins") {
                     steps {
-                        sh "sudo cp target/*.war /opt/tomcat/webapps"
+                        sh "cp target/*.war /opt/tomcat/webapps"
                     }
                 }
                 stage ("deploy in slave") {
