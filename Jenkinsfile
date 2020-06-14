@@ -28,8 +28,24 @@ pipeline {
         }
         stage ("quality") {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    stage ("maven") {
+            parallel {
+                stage ("buld in master") {
+                    steps {
+                        sh 'mvn clean install'
+                    }
+                }
+                stage ("buld in slave") {
+                    steps {
+                        node ("${NODE}") {
+                            sh 'mvn clean install'
+                        }
+                    }
                 }
             }
         }
