@@ -202,13 +202,19 @@
               <repository>
 		  <id>sample_release</id>
 	          <name>sample_release</name>
-		      <url>http:http://3.235.173.182:8081/repository/sample_release/</url>
+		      <url>http://3.236.8.147:8081/repository/setup_release/</url>
 	      </repository>
 	      <snapshotRepository>
 		  <id>sample_snapshot</id>
 		  <name>2</name>
-		  <url>http://3.235.173.182:8081/repository/sample_snapshot/</url>
+		  <url>http://3.236.8.147:8081/repository/setup_snashot/</url>
 	      </snapshotRepository>
 	 </distributionManagement>
 	<name>simple-web-app</name>
+	<repositories>
+    <repository>
+      <id>suresh-group</id>
+      <url>http://3.236.8.147:8081/repository/setup_group/</url>
+    </repository>
+  </repositories>
 </project>
