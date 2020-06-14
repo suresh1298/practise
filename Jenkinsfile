@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-    stage ("maven") {
+        stage ("maven") {
             parallel {
                 stage ("buld in master") {
                     steps {
@@ -44,6 +44,44 @@ pipeline {
                     steps {
                         node ("${NODE}") {
                             sh 'mvn clean install'
+                        }
+                    }
+                }
+            }
+        }
+        stage ("nexus") {
+            parallel {
+                stage ("deploy in master") {
+                    steps {
+                        node ("${NODE}") {
+                            script {
+                                 if (env.BRANCH_NAME == 'master') {
+                                     nexusPublisher nexusInstanceId: '3.236.8.147', nexusRepositoryId: 'setup_release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
+                                 } else {
+                                     nexusPublisher nexusInstanceId: '3.236.8.147', nexusRepositoryId: 'setup_snashot', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/practise.war']], mavenCoordinate: [artifactId: 'practise', groupId: 'whatsapp', packaging: 'war', version: '1.0']]]
+                                 }
+                            }
+                        }
+                    }
+                }
+                stage ("sucess") {
+                    steps {
+                        sh "echo 'sucess from nexus'"
+                    }
+                }
+            }
+        }
+        stage ("depeloy") {
+            parallel {
+                stage ("deploy in jenkins") {
+                    steps {
+                        sh "echo 'deployed sucessfully'"
+                    }
+                }
+                stage ("deploy in slave") {
+                    steps {
+                        node ("${NODE}") {
+                            sh "sudo cp target/*.war /opt/tomcat/webapps"
                         }
                     }
                 }
