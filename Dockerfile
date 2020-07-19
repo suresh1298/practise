@@ -1,31 +1,56 @@
-FROM ubuntu:latest
-MAINTAINER suresh
-WORKDIR /opt
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
-ENV JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
-COPY ./java.sh /etc/profile.d/java.sh
-COPY ./maven.sh /etc/profile.d/maven.sh
-RUN apt update --no-install-recommends -y && \
-        DEBIAN_FRONTEND="noninteractive" \
-        apt-get install tzdata \
-        git \
-        wget \
-        openjdk-8-jdk \
-        maven --no-install-recommends -y && \
-        git clone https://github.com/suresh1298/practise.git /root/practise/ && \
-        wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.37/bin/apache-tomcat-9.0.37.tar.gz && \
-        tar -xvzf apache-tomcat-9.0.37.tar.gz && \
-        chmod +x /etc/profile.d/java.sh \
-        /etc/profile.d/maven.sh && \
-        /bin/bash -c "source /etc/profile.d/java.sh"
-COPY ./manager.xml /opt/apache-tomcat-9.0.37/conf/Catalina/localhost/manager.xml
-COPY ./tomcat-users.xml /opt/apache-tomcat-9.0.37/conf/tomcat-users.xml
-WORKDIR /root/practise/
-ARG CACHE=1
-RUN git pull & \
-        mvn clean install && \
-        cp /root/practise/target/*.war /opt/apache-tomcat-9.0.37/webapps/ && \
-        rm -rf /var/lib/apt/lists/*
-EXPOSE 8080
-CMD ["catalina.sh", "run"]
-ENTRYPOINT ["/opt/apache-tomcat-9.0.37/bin/catalina.sh", "run"]
+pipeline {
+    agent any 
+    stages {
+        stage ("git") {
+            steps {
+                git 'https://github.com/suresh1298/practise.git'
+            }
+        }
+        stage ("sonar analasys") {
+            environment {
+                scannerHome = tool 'scanner'
+            }
+            steps {
+                script {
+                    withSonarQubeEnv('sonar') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+        stage ("quality gate check") { 
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        stage ("mvn") {
+            steps {
+                sh "sudo cp /opt/docker/java/java.sh ."
+                sh "sudo cp /opt/docker//maven/maven.sh ."
+                sh "sudo cp /opt/docker/tomcat/manager.xml ."
+                sh "sudo cp /opt/docker/tomcat/tomcat-users.xml ."
+            }
+        }
+        stage ("imagee build") {
+            steps {
+                script {
+                    docker.build ("tomcat:latest", "--build-arg CACHE=8")
+                }
+            }
+        }
+        stage ("ecr") {
+            steps {
+                sh "sudo aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 340043406172.dkr.ecr.us-east-1.amazonaws.com"
+                sh "sudo docker tag tomcat:latest 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
+                sh "sudo docker push 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
+            }
+        }
+        stage ("deployment") {
+            steps {
+                sh "aws ecs update-service --cluster tomcat --service  practise --force-new-deployment --region us-east-1 "
+            }
+        }
+    }
+}
