@@ -3,8 +3,8 @@ MAINTAINER suresh
 WORKDIR /opt
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 ENV JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
-COPY ./java/java.sh /etc/profile.d/java.sh
-COPY ./maven/maven.sh /etc/profile.d/maven.sh
+COPY ./java.sh /etc/profile.d/java.sh
+COPY ./maven.sh /etc/profile.d/maven.sh
 RUN apt update --no-install-recommends -y && \
         DEBIAN_FRONTEND="noninteractive" \
         apt-get install tzdata \
@@ -18,8 +18,8 @@ RUN apt update --no-install-recommends -y && \
         chmod +x /etc/profile.d/java.sh \
         /etc/profile.d/maven.sh && \
         /bin/bash -c "source /etc/profile.d/java.sh"
-COPY ./tomcat/manager.xml /opt/apache-tomcat-9.0.37/conf/Catalina/localhost/manager.xml
-COPY ./tomcat/tomcat-users.xml /opt/apache-tomcat-9.0.37/conf/tomcat-users.xml
+COPY ./manager.xml /opt/apache-tomcat-9.0.37/conf/Catalina/localhost/manager.xml
+COPY ./tomcat-users.xml /opt/apache-tomcat-9.0.37/conf/tomcat-users.xml
 WORKDIR /root/practise/
 RUN mvn clean install && \
         cp /root/practise/target/*.war /opt/apache-tomcat-9.0.37/webapps/ && \
