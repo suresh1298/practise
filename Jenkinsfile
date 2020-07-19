@@ -47,5 +47,10 @@ pipeline {
                 sh "sudo docker push 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
             }
         }
+        stage ("deployment") {
+            steps {
+                sh "aws ecs update-service --cluster tomcat --service practise--force-new-deployment --region us-east-1 "
+            }
+        }
     }
 }
