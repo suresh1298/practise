@@ -35,7 +35,7 @@ pipeline {
         }
         stage ("imagee build") {
             steps {
-                sctipt {
+                script {
                     docker.build ("tomcat:latest")
                 }
             }
