@@ -41,9 +41,11 @@ pipeline {
             }
         }
         stage ("ecr") {
-            sh "sudo aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 340043406172.dkr.ecr.us-east-1.amazonaws.com"
-            sh "sudo docker tag tomcat:latest 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
-            sh "sudo docker push 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
+            steps {
+                sh "sudo aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 340043406172.dkr.ecr.us-east-1.amazonaws.com"
+                sh "sudo docker tag tomcat:latest 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
+                sh "sudo docker push 340043406172.dkr.ecr.us-east-1.amazonaws.com/practise:latest"
+            }
         }
     }
 }
