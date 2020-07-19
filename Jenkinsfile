@@ -27,9 +27,7 @@ pipeline {
         }
         stage ("mvn") {
             steps {
-                dir("/opt/docker/") {
-                    sh "docker build -t tomcat:1.0 ."
-                }
+                sh "docker build -t tomcat:1.0 ."
             }
         }
     }
