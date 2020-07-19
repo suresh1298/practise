@@ -31,7 +31,6 @@ pipeline {
                 sh "sudo cp /opt/docker//maven/maven.sh ."
                 sh "sudo cp /opt/docker/tomcat/manager.xml ."
                 sh "sudo cp /opt/docker/tomcat/tomcat-users.xml ."
-                sh "suco cp /root/practise/target/practise.war ."
                 sh "docker build -t tomcat:1.0 ."
             }
         }
