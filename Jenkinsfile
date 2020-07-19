@@ -31,7 +31,13 @@ pipeline {
                 sh "sudo cp /opt/docker//maven/maven.sh ."
                 sh "sudo cp /opt/docker/tomcat/manager.xml ."
                 sh "sudo cp /opt/docker/tomcat/tomcat-users.xml ."
-                docker.build ("tomcat:latest")
+            }
+        }
+        stage ("imagee build") {
+            steps {
+                sctipt {
+                    docker.build ("tomcat:latest")
+                }
             }
         }
     }
