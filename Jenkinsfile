@@ -12,26 +12,16 @@ pipeline {
             }
             steps {
                 script {
-                    if (env.branch_name == 'master') { 
-                        withSonarQubeEnv('sonar') {
-                            sh "${scannerHome}/bin/sonar-scanner"
-                        }
-                    } else { 
-                        sh "echo this is not a master branch"
+                    withSonarQubeEnv('sonar') {
+                        sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
         }
         stage ("quality gate check") { 
             steps {
-                script {
-                    if (env.branch_name == 'master') {
-                        timeout(time: 2, unit: 'MINUTES') {
-                            waitForQualityGate abortPipeline: true
-                        }
-                    } else {
-                        sh "echo this is not a master branch"
-                    }
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
