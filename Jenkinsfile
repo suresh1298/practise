@@ -36,7 +36,7 @@ pipeline {
         stage ("imagee build") {
             steps {
                 script {
-                    docker.build ("tomcat:latest")
+                    docker.build ("tomcat:latest", "--build-arg CACHE=8")
                 }
             }
         }
