@@ -21,7 +21,9 @@ RUN apt update --no-install-recommends -y && \
 COPY ./manager.xml /opt/apache-tomcat-9.0.37/conf/Catalina/localhost/manager.xml
 COPY ./tomcat-users.xml /opt/apache-tomcat-9.0.37/conf/tomcat-users.xml
 WORKDIR /root/practise/
-RUN mvn clean install && \
+ARG CACHE=1
+RUN git pull & \
+        mvn clean install && \
         cp /root/practise/target/*.war /opt/apache-tomcat-9.0.37/webapps/ && \
         rm -rf /var/lib/apt/lists/*
 EXPOSE 8080
