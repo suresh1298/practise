@@ -6,23 +6,33 @@ pipeline {
                 git 'https://github.com/suresh1298/practise.git'
             }
         }
-        stage ("sonar analysis") {
+        stage ("sonar analasys") {
+            environment {
+                scannerHome = tool 'scanner'
+            }
             steps {
-                environment {
-                    scannerHome = tool 'sonarscanner'
+                script {
+                    if (env.branch_name == 'master') { 
+                        withSonarQubeEnv('sonar') {
+                            sh "${scannerHome}/bin/sonar-scanner"
+                        }
+                    } else { 
+                        sh "echo this is not a master branch"
+                    }
                 }
-           }
+            }
         }
-        stage ("quality gate") {
+        stage ("quality gate check") { 
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    if (env.branch_name == 'master') {
+                        timeout(time: 2, unit: 'MINUTES') {
+                            waitForQualityGate abortPipeline: true
+                        }
+                    } else {
+                        sh "echo this is not a master branch"
+                    }
                 }
-           }
-        }
-        stage ("mvn") {
-            steps {
-                sh "mvn package"
             }
         }
     }
