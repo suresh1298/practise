@@ -49,7 +49,7 @@ pipeline {
         }
         stage ("deployment") {
             steps {
-                sh "aws ecs update-service --cluster tomcat --service practise--force-new-deployment --region us-east-1 "
+                sh "aws ecs update-service --cluster tomcat --service  practise --force-new-deployment --region us-east-1 "
             }
         }
     }
